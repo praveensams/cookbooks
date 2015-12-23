@@ -1,0 +1,15 @@
+iptables -F
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 
+iptables -A INPUT -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+#iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -p tcp --dport 40022 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables  -A INPUT -p tcp -m state --state NEW  --dport 111 -j ACCEPT
+iptables  -A INPUT -p tcp -m state --state NEW  --dport 16001 -j ACCEPT
+iptables -A INPUT -j DROP 
+iptables  -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -p  udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+iptables -A OUTPUT  -p tcp -m state --state NEW --dport 80 -j ACCEPT
+iptables -A OUTPUT  -p tcp -m state --state NEW --dport 443  -j ACCEPT
+iptables -A OUTPUT  -p tcp -m state --state NEW --dport 25 -j ACCEPT
+iptables -A OUTPUT -j DROP

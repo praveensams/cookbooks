@@ -1,0 +1,53 @@
+#
+# Cookbook Name:: nse-crontab
+# Recipe:: default
+#
+# Copyright 2015, Pearson English
+#
+# All rights reserved - Do Not Redistribute
+#
+##This cookbook adds the cron entry for db backup script
+
+node['cron'][ node['server']['type'] ][ node['server']['env'] ][ node['server']['season'] ].each do |script,crontab|
+
+       puts script
+       
+       crontab_entry="#{node['cron'][ node['server']['type'] ][ node['server']['env'] ][ node['server']['season'] ][ script ]}"
+       
+       #puts crontab_entry
+       
+       if crontab_entry =~ /[a-z]/
+       
+                 crontab_entry_file_location=`echo "#{crontab_entry}" | awk '{print $6}'`
+                 
+                 crontab_entry_file=`basename "#{crontab_entry_file_location}"`
+                 
+                 crontab_entry_file=crontab_entry_file.chop
+                 
+                 crontab_directory=`dirname "#{crontab_entry_file_location}"` 
+                 
+                 ## create backups directory
+                 directory crontab_directory.chop do
+                 	mode '0755'
+                 	action :create
+                 	recursive true 
+                 end
+                 
+                 ## DB backup script
+                 template crontab_entry_file_location.chop do
+                 	source "#{crontab_entry_file.chop}.erb"
+                 	mode "0744"
+                 end
+                 
+                 ## Bash resource to append cron entry in cron file
+                 bash "crontab entry" do
+                 	code <<-EOH
+                 	( crontab -l ; echo "#{crontab_entry}" ) | crontab -
+                 	service cron restart
+                 	EOH
+                     not_if "crontab -l | grep #{crontab_entry_file}"
+                 end
+                 
+       end
+
+end

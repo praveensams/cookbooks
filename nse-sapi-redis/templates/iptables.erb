@@ -1,0 +1,11 @@
+iptables -A INPUT -p udp -m udp --dport 67 -j ACCEPT
+iptables -A INPUT -p udp -m udp --dport 68 -j ACCEPT
+iptables  -A INPUT -p tcp -m state --state NEW -m tcp -s --dport 22 -j ACCEPT
+iptables  -A INPUT -p tcp -m state --state NEW -m tcp -s --dport 111 -j ACCEPT
+iptables  -A INPUT -p tcp -m state --state NEW -m tcp -s --dport 16001 -j ACCEPT
+iptables -A INPUI -j DROP 
+iptables -A OUTPUT $DNS_IF_OUT -p udp -m state --state NEW --dport 53 -j ACCEPTiptables -A OUTPUT $DNS_IF_OUT -p udp -m state --state NEW --dport 25 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+iptables -A OUTPUT  -p tcp -m state --state NEW --dport 80 -j ACCEPT
+iptables -A OUTPUT  -p tcp -m state --state NEW --dport 443  -j ACCEPT
+iptables -A OUTPUT -j DROP

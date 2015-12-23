@@ -1,0 +1,14 @@
+server {
+  listen   <%= node['nginx']['port'] %>;
+
+	ssl    on;
+	ssl_certificate  <%= node['nginx']['certificate'] %>;
+	ssl_certificate_key   <%= node['nginx']['certificate_key'] %> 
+  
+  server_name  <%= node['nginx']['servername'] %>;
+  location / {
+                proxy_set_header Host <%= node['nginx']['proxy']['host'] %>;
+                proxy_set_header X-Real-IP <%= node['nginx']['proxy']['X-Real-IP'] %>;
+                proxy_pass <%= node['nginx']['proxy']['pass'] %>;
+  }
+}

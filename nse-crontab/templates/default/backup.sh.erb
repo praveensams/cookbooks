@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Add your backup dir location, password, mysql location and mysqldump location
+
+DATE=`date +%d-%m-%Y-%H-%M-%S`
+BACKUP_DIR="/AZVOL/data/backup"
+
+MONGO=/usr/bin/mongo
+MONGODUMP=/usr/bin/mongodump
+
+SUBJECT="MonGo backup failed"
+EMAIL=dhivya.munusamy@pearson.com
+
+# To create a new directory into backup directory location
+#mkdir -p $BACKUP_DIR/$DATE
+
+# dump the database
+mongodump --host 10.168.201.101 --port 27017 -u Backup_User -p Hergwervtb3fg --authenticationDatabase admin --out $BACKUP_DIR/NSETestEvenMonGodbdump-$DATE
+
+
+tar -zcf $BACKUP_DIR/NSETestEvenMonGodbdump-$DATE.tar $BACKUP_DIR/NSETestEvenMonGodbdump-$DATE
+
+rm -rf $BACKUP_DIR/NSETestEvenMonGodbdump-$DATE
+
+if [ -f $BACKUP_DIR/NSETestEvenMonGodbdump-$DATE.tar ];
+    then
+        echo "Mongo database backed up successfully"
+    else
+        echo "Error: Could not take database backup!"
+        echo -e "Mongo backup failed in Test Even NSE db server" | mailx -r global.ops@globalenglish.com -s $SUBJECT $EMAIL
+fi
+
+
+# Delete files older than 3 days
+find $BACKUP_DIR/* -mtime +3 -exec rm {} \;
+
+BKPFILE=NSETestEvenMonGodbdump-$DATE.tar
+
+if [ -f $BACKUP_DIR/NSETestEvenMonGodbdump-$DATE.tar ];
+then
+	AZURE=`which azure`
+	AZURE_ACCOUNT="nsemongodbbackups"
+	AZURE_ACCOUNT_KEY="TVqe6SzLyJojdDCVMG4rerMzBRuWK3rfvS/i1FmJySD0mcDfJPsbe0n/hC3sfNneZU8M1ob85QlGbjg7SSfobg=="
+	AZURE_CONTAINER="nsedtsmongodbdbbackups"
+	AZURE_BLOB=$BKPFILE
+	UPLOAD_FILE=$BACKUP_DIR/$AZURE_BLOB
+	$AZURE storage blob upload -a "$AZURE_ACCOUNT" -k "$AZURE_ACCOUNT_KEY" --container "$AZURE_CONTAINER" -f "$UPLOAD_FILE" -b "$AZURE_BLOB"
+fi

@@ -1,0 +1,2 @@
+## Cron entry fro db backup script
+default['cron']['db']['test']['even']['dbbackup']='0 2 * * * /AZVOL/backups/backup.sh >> /var/log/cronbackup.log 2>&1'

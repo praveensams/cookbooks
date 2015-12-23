@@ -1,0 +1,39 @@
+user <%= node['nginx']['user'] %>;
+worker_processes <%= node['nginx']['worker_processes'] %>;
+pid <%= node['nginx']['pid'] %>;
+
+events {
+        worker_connections <%= node['nginx']['worker_connections'] %>;
+       }
+
+http {
+      
+        ##
+        # Basic Settings
+        ##
+        client_max_body_size <%= node['nginx']['client_max_body_size'] %>;
+        sendfile <%= node['nginx']['sendfile'] %>;
+        tcp_nopush <%= node['nginx']['tcp_nopush'] %>;
+        tcp_nodelay <%= node['nginx']['tcp_nodelay'] %>;
+        keepalive_timeout <%= node['nginx']['keepalive_timeout'] %>;
+        types_hash_max_size <%= node['nginx']['types_hash_max_size'] %>;
+        include <%= node['nginx']['dir'] %>/mime.types;
+        default_type <%= node['nginx']['default_type'] %>;
+
+        ##
+        # Logging Settings
+        ##
+
+        access_log <%= node['nginx']['log_dir'] %>/access.log;
+        error_log <%= node['nginx']['log_dir'] %>/error.log;
+
+        ##
+        # Gzip Settings
+        ##
+
+        gzip <%= node['nginx']['gzip'] %>;
+        gzip_disable <%= node['nginx']['gzip_disable'] %>;
+        
+        include <%= node['nginx']['dir'] %>/conf.d/*.conf;
+        ##include <%= node['nginx']['dir'] %>/sites-enabled/*;
+}

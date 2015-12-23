@@ -1,0 +1,7 @@
+ cp -p /etc/passwd /etc/passwd.bak
+ cp -p /etc/shadow /etc/shadow.bak
+ cp -p /etc/group /etc/group.bak
+ sed -ri 's/(^news:|^games:|^gopher:|^ftp).*\n//g' /etc/passwd
+ sed -ri 's/(^news:|^games:|^gopher:|^ftp).*\n//g' /etc/shadow
+ sed -ri 's/(^news:|^games:|^gopher:|^ftp).*\n//g' /etc/group
+  

@@ -1,0 +1,57 @@
+#
+# Cookbook Name:: nse-useradmin
+# Recipe:: default
+#
+# Copyright 2015, Pearson English
+#
+# All rights reserved - Do Not Redistribute
+#
+
+
+node['group']['list'].each do |groups|
+
+	group groups do
+		action :create
+	end
+
+end
+
+node['group']['list'].each do |usergroup|
+
+
+	search(:users, '*:*').each do |u|
+
+	
+	secret = Chef::EncryptedDataBagItem.load("users", "#{u['id']}")
+
+        if secret['gid'] =~ /#{usergroup}/
+
+					  user secret['id'] do
+					    comment "#{secret['comment']}"
+					    home "/home/#{secret['id']}"
+					    gid  "#{secret['gid']}"
+					     shell '/bin/bash'
+					    supports manage_home: true
+					  end
+
+					  directory "/home/#{secret['id']}/.ssh" do
+					    owner u['id']
+					  end
+
+
+					if secret["ssh_keys"]
+					  ruby_block "write_key" do
+					    block do
+					      f = ::File.open("/home/#{u['id']}/.ssh/authorized_keys", "w")
+					      f.print(secret["ssh_keys"])
+					      f.close
+					    end
+					    not_if do ::File.exists?("/home/#{u['id']}/.ssh/authorized_keys"); end
+					  end
+					end
+		
+	end
+
+    end
+
+end

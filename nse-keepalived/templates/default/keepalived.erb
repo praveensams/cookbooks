@@ -1,0 +1,27 @@
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     sysadmin@mydomain.com
+     support@mydomain.com
+   }
+   notification_email_from lb1@mydomain.com
+   smtp_server localhost
+   smtp_connect_timeout 30
+}
+
+vrrp_instance VI_1 80 {
+    state MASTER
+    interface eth1
+    virtual_router_id <%= node['server']['virtual_id'] %>
+    priority 101
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        <%= node['server']['virtual_ip'] %>
+    }
+}
+

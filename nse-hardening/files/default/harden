@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+
+open(FILE,"/etc/ssh/ssh_config");
+open(FILE1,">/etc/ssh/ssh_config_old");
+
+while($line=<FILE>)
+	{
+	if(($line=~/Protocol/)&&($line=~/^#/))
+		{
+		$line=~s/#.*Protocol.*/  Protocol 2/g;
+		print FILE1 $line;
+		}
+	else
+		{
+		print FILE1 $line;
+		}
+	}
+close(FILE);
+close(FILE1);
+
